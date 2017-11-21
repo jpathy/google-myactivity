@@ -3,38 +3,38 @@ notifications:
   email: false
 go: 1.9.x
 os:
-- linux
-- osx
-env: GO_BUILD_CMD="go build -ldflags -s -w -X main.commitHash=$(git rev-parse --short
-  HEAD 2>/dev/null) -X main.buildDate=$(date '+%Y-%m-%d') -X main.version=$(git describe
-  --tags --dirty)"
+  - linux
+  - osx
+
+env: GO_BUILD_LDFLAGS="-s -w -X main.commitHash=$(git rev-parse --short HEAD 2>/dev/null) -X main.buildDate=$(date '+%Y-%m-%d') -X main.version=$(git describe --tags --dirty)"
+
 addons:
   apt:
     packages:
-    - sqlite3
-    - gcc-mingw-w64
+      - sqlite3
+      - gcc-mingw-w64
+
 before_install:
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install sqlite; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install sqlite; fi
 install: skip
+
 before_script:
-- go get github.com/golang/dep/cmd/dep
-- dep ensure
+  - go get github.com/golang/dep/cmd/dep
+  - dep ensure
 script:
-- go build -v ./...
+  - go build -v ./...
+
 before_deploy:
-- mkdir -p release
-- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then GOARCH=amd64 GOOS=windows CC=x86_64-w64-mingw32-gcc
-  $GO_BUILD_CMD -o release/gmusic_activity-windows-amd64.exe ./gmusic_activity; fi
-- "$GO_BUILD_CMD -o release/gmusic_activity-$(go env GOHOSTOS)-$(go env GOHOSTARCH)
-  ./gmusic_activity"
+  - mkdir -p release
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CGO_ENABLED=1 GOARCH=amd64 GOOS=windows CC=x86_64-w64-mingw32-gcc go build -ldflags "$GO_BUILD_LDFLAGS" -o release/gmusic_activity-windows-amd64.exe ./gmusic_activity; fi
+  - go build -ldflags "$GO_BUILD_LDFLAGS" -o release/gmusic_activity-$(go env GOHOSTOS)-$(go env GOHOSTARCH) ./gmusic_activity
 deploy:
   provider: releases
   api_key:
-    secure: Mjlz8j6rf3uU2K5UkPQIEYO7N+Bn/rENIy7y+UyQPep3hYqP1ni5SxAUiLPDRvKjiWnnOCficONKZO7Mf5p3pjnnpirwHBGpXGsdwLzpJkZkTmB5cCD9f4dY95u4iI/LxZXPLRzBHWull7CG6D/+/ukzR0diUhDYhl63OSNwl6/wGXPEb9al9Isv/oSVRL0Y4ZWIgg9OKKlQJAgFawAmaClyN6Pj580BNlqPBgcbEQ4KFyUT8XfsoxRnGnIcYkSh4vlbQLe2Crr6lj9mN2AGrM2/C6GXQEWJUWMDxr8sAbNcsxpvEYjHI8v2iTev9aakXuu+ojlW40dbLNeqPDhEM71QBuTDXViEy4H4Ix+CDIpo9K6tEcXEwCbLqaTlF8JgmB2TqUiBix/YdjsvyK8n/INNVNa+TIkT5tLupnmbNaSqVYVWZNEKlvWD6W3yNZxhULg03oGD4I7/UeDYGI1Z4MAShgmUbg+HltBZDbdmqSMX7UUmA1pp4jBNiO4gKLNm0dsqRhh0BiHLYRN8HyUxOefm9PxJkW8LnSoKwibmKGhMdpau22jcqZPgKbTM9FjDDK1vNTc7q9yJOWxJEzRf2A5q6Yv+DTdeawT8rIxVdCam/F2uL8fooLkX1AYHjCiBg+9qCuSeXfpVuSRrzz8r0Qu/PbkTiQH4ofnIRfZ8Jfw=
-  file:
-    - release/gmusic_activity-windows-amd64.exe
-    - release/gmusic_activity-linux-amd64
-    - release/gmusic_activity-darwin-amd64
+    secure: Ja05pNRs3jFBxlDQrEwloD3IF/Z4UeFGqNOFImG3EKdzJSguQt37AmlGMVj7GH73MrbVL3MLszRFOrIN+qnTYmE4wr8vD3OpZLLIQJUclOYy9gOOmEbKzEsvacNCIOGqAMq/N/1/4n0ivxos0EubdNQV5H3nEFMwY+zgcxtdP2JPoQovS8Pago5EsYrvmUFX4biaycXmOPbDqlrnc9ZUSeQdEoVFENybqDQYH9/8g91MtWnlEqW6ZDnPh3Q4teKrd4J/YKBwrgdAlFuhayVGsg1/9wy7iqfYGQ8hJ6RcPIN14yUgVhX94wHMyTFlze7nVwyuaQDIiJgpkcTERjPvhr2O82f3fFkvHqFT6Qfnry03dpjbcB/sa828qmvs6NZT9LcMbqVpVzDPkrNUmHqoSpJs7yoMOWqJnOqsHoMLp2k4m9V1q5mDQI+tWv+COFo4tbgsZZdzGfhXknroyj2gnNdUe21VQz5INxXooIb5LXd/es9Pouxe/dzGK/uShNpUh5CPDoz+mS0o/Qg8hLGgsnLk0vQRQxJYPBevsz445TzHWKaUNA3BsIlkH07xvJ02tdoWPXGvdM+jJh9x60TCLVms8EbbkAWb0O+tsK49L3Wy01T2+qTfyMA87fMDiCzbgIyKpg/LHhfhwrq7Q3+8fuO2w27c4UazSHxuHr15JcY=
+  file_glob: true
+  file: release/*
+  skip_cleanup: true
   on:
     repo: jpathy/google-myactivity
     branch: master
