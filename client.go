@@ -43,6 +43,7 @@ func NewClient(chromePath, chromeDataDir, debugPort string) *Client {
 }
 
 // FetchActivities fetches activities with query params and sends results to the returned channel processed by decoderFn.
+// Valid params: "min", "max" : unix epoch in microseconds and "product" : product id of the activity.
 // On any error, the error channel is used to send the error. The error channel is non-blocking.
 func (c *Client) FetchActivities(ctx context.Context, params url.Values, decoderFn ActivityDecoderFunc) (<-chan []interface{}, <-chan error) {
 	u, err := url.Parse(myActivityURL)

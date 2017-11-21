@@ -20,6 +20,12 @@ const (
 	gmusicProductID = "16"
 )
 
+var (
+	version    = "devel"
+	commitHash = "unknown"
+	buildDate  = "unknown"
+)
+
 type listenData struct {
 	TrackName   string
 	TrackArtist string
@@ -84,7 +90,15 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "gmusicactivity"
 	app.Usage = "Manage google music activities"
-	app.Version = "0.1.0"
+	app.Version = version
+	cli.VersionPrinter = func(c *cli.Context) {
+		fmt.Printf(`gmusicactivity:
+ version    : %s
+ revision   : %s
+ build date : %s
+`, version, commitHash, buildDate)
+	}
+
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:        "chrome-path",

@@ -1,13 +1,20 @@
+[![Build Status](https://travis-ci.org/jpathy/google-myactivity.svg?branch=master)](https://travis-ci.org/jpathy/google-myactivity)
+[![Documentation](https://godoc.org/github.com/jpathy/google-myactivity?status.svg)](https://godoc.org/github.com/jpathy/google-myactivity)
+
 About
 =====
 Provides a library to fetch entries from [Google Myactivity](https://myactivity.google.com) and a utility program to fetch google music listen history.
 
 Install
 =======
-`go install github.com/jpathy/google-myactivity/gmusic_activity`
+`go get -u github.com/jpathy/google-myactivity/gmusic_activity`
+
+Needs sqlite3 library installed.
 
 Usage
 =====
+Needs Google chrome/chromium with [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol) support. Additionally the `user-data-dir` provided must have logged in session to google account. If using default `user-data-dir` (absence of the flag), no instance of chrome should be running without debugging-port.
+
     $ gmusic_activity --help
     NAME:
        gmusicactivity - Manage google music activities
