@@ -110,7 +110,9 @@ func (c *Client) FetchActivities(ctx context.Context, params url.Values, decoder
 			}
 
 			prevct = marker.CT
-			respData, marker.CT, err = decodeActivities(resp.Body, decoderFn)
+			if respData, marker.CT, err = decodeActivities(resp.Body, decoderFn); err != nil {
+				return
+			}
 			resp.Body.Close()
 
 			select {
