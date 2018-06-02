@@ -63,6 +63,9 @@ func decodeGMusicActivity(m json.RawMessage) (result interface{}, err error) {
 		return
 	} else if track[0] == nil {
 		return
+	// ignore search records of form [query,true,"Searched for",url]
+	} else if track[1] != nil {
+		return
 	} else if d.TrackName, ok = track[0].(string); !ok {
 		return
 	}
