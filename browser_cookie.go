@@ -160,7 +160,7 @@ func browserCookieAndSig(ctx context.Context, execPath, userDataDir, port string
 
 	// Find the search/filter box on myactivity, this tests for login
 	searchBox, err := cl.DOM.QuerySelectorAll(ctx,
-		dom.NewQuerySelectorAllArgs(doc.Root.NodeID, `#main-content > div.main-column-width > div.layout-column > md-card`))
+		dom.NewQuerySelectorAllArgs(doc.Root.NodeID, `#main-content > div.main-column-width > div.fp-search-privacy-holder > md-card`))
 	if err != nil {
 		return
 	} else if len(searchBox.NodeIDs) == 0 {
